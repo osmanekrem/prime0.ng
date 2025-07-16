@@ -1,16 +1,20 @@
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
+const resend = new Resend(
+  process.env.RESEND_API_KEY ||
+    (() => {
+      throw new Error("RESEND_API_KEY environment variable is required");
+    })()
+);
 export const sendVerificationEmail = async (email: string, token: string) => {
-    const verificationUrl = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/verify?token=${token}`;
+  const verificationUrl = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/verify?token=${token}`;
 
-    try {
-        await resend.emails.send({
-        from: 'onboarding@resend.dev',
-        to: email,
-        subject: "E-Posta Adresinizi Doğrulayın",
-        html: `
+  try {
+    await resend.emails.send({
+      from: process.env.SMTP_FROM || "onboarding@resend.dev",
+      to: email,
+      subject: "E-Posta Adresinizi Doğrulayın",
+      html: `
             <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -251,23 +255,23 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     </div>
 </body>
 </html>
-        `
-        });
-    } catch (error) {
-        console.error("Email gönderilirken hata oluştu:", error);
-        throw new Error("Email gönderilirken bir hata oluştu.");
-    }
-}
+        `,
+    });
+  } catch (error) {
+    console.error("Email gönderilirken hata oluştu:", error);
+    throw new Error("Email gönderilirken bir hata oluştu.");
+  }
+};
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-    const resetUrl = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/reset-password?token=${token}`;
+  const resetUrl = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/reset-password?token=${token}`;
 
-    try {
-        await resend.emails.send({
-            from: 'onboarding@resend.dev',
-            to: email,
-            subject: "Şifre Sıfırlama Talebi",
-            html: `
+  try {
+    await resend.emails.send({
+      from: process.env.SMTP_FROM || "onboarding@resend.dev",
+      to: email,
+      subject: "Şifre Sıfırlama Talebi",
+      html: `
             <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -501,10 +505,10 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     </div>
 </body>
 </html>
-        `
-        });
-    } catch (error) {
-        console.error("Email gönderilirken hata oluştu:", error);
-        throw new Error("Email gönderilirken bir hata oluştu.");
-    }
-}
+        `,
+    });
+  } catch (error) {
+    console.error("Email gönderilirken hata oluştu:", error);
+    throw new Error("Email gönderilirken bir hata oluştu.");
+  }
+};

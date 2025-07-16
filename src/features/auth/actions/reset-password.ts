@@ -1,48 +1,58 @@
-"use server"
+"use server";
 
-import { ResponseType} from "@/lib/schema";
-import {ResetPasswordSchema, ResetPasswordSchemaType} from "@/features/auth/schemas";
+import { ResponseType } from "@/lib/schema";
+import {
+  ResetPasswordSchema,
+  ResetPasswordSchemaType,
+} from "@/features/auth/schemas";
 
-import {getUserByEmail} from "@/data/user";
-import {generateResetPasswordToken} from "@/features/auth/lib/tokens";
-import {sendPasswordResetEmail} from "@/features/auth/lib/mail";
+import { getUserByEmail } from "@/data/user";
+import { generateResetPasswordToken } from "@/features/auth/lib/tokens";
+import { sendPasswordResetEmail } from "@/features/auth/lib/mail";
 
-export async function resetPassword(values: ResetPasswordSchemaType): Promise<ResponseType<null>> {
+export async function resetPassword(
+  values: ResetPasswordSchemaType
+): Promise<ResponseType<null>> {
+  try {
     const validatedData = ResetPasswordSchema.safeParse(values);
 
     if (!validatedData.success) {
-        return {
-            success: false,
-            error: "Geçersiz bilgiler"
-        };
+      return {
+        success: false,
+        error: "Geçersiz bilgiler",
+      };
     }
 
-    const {email} = validatedData.data;
+    const { email } = validatedData.data;
 
     const user = await getUserByEmail(email);
     if (!user) {
-        return {
-            success: false,
-            error: "Bu e-posta adresi kayıtlı değil"
-        };
+      return {
+        success: false,
+        error: "Bu e-posta adresi kayıtlı değil",
+      };
     }
 
     const resetToken = await generateResetPasswordToken(email);
 
-    if(!resetToken) {
-        return {
-            success: false,
-            error: "Sıfırlama bağlantısı oluşturulamadı"
-        };
+    if (!resetToken) {
+      return {
+        success: false,
+        error: "Sıfırlama bağlantısı oluşturulamadı",
+      };
     }
 
-    await sendPasswordResetEmail(
-        resetToken.email,
-        resetToken.token
-    )
+    await sendPasswordResetEmail(resetToken.email, resetToken.token);
 
     return {
-        success: true,
-        message: "Sıfırlama bağlantısı e-posta adresinize gönderildi"
-    }
+      success: true,
+      message: "Sıfırlama bağlantısı e-posta adresinize gönderildi",
+    };
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return {
+      success: false,
+      error: "Bir hata oluştu. Lütfen daha sonra tekrar deneyin",
+    };
+  }
 }
