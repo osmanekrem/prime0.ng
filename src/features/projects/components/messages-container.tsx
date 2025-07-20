@@ -2,7 +2,7 @@
 
 import MessageCrad from "@/features/projects/components/message-crad";
 import MessageForm from "@/features/projects/components/message-form";
-import {useGetMessages} from "@/features/messages/api/use-get-messages";
+import {getMessages} from "@/features/messages/api/use-get-messages";
 import {useSuspenseQuery} from "@tanstack/react-query";
 import React, {useEffect, useRef} from "react";
 import {Fragment} from "@/db/schema";
@@ -22,7 +22,7 @@ export default function MessagesContainer({
     const bottomRef = useRef<HTMLDivElement | null>(null);
     const lastAssistanMessageIdRef = useRef<string | null>(null);
 
-    const {data: messages} = useSuspenseQuery((() => useGetMessages(projectId))());
+    const {data: messages} = useSuspenseQuery((() => getMessages(projectId))());
     useEffect(() => {
         const lastAssistantMessage = messages.findLast(
             (message) => message.message.messageRole === "ASSISTANT" && message.fragment

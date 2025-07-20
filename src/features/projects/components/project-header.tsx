@@ -1,7 +1,7 @@
 "use client";
 
 import {useSuspenseQuery} from "@tanstack/react-query";
-import {useGetProject} from "@/features/projects/api/use-get-project";
+import { useGetProject} from "@/features/projects/api/use-get-project";
 import {SidebarTrigger} from "@/components/ui/sidebar";
 import {DropdownMenu, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";

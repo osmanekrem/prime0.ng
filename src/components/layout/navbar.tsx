@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 import {cn} from "@/lib/utils";
 import {usePathname} from "next/navigation";
-import {CheckCircle2Icon, HomeIcon, SettingsIcon, UsersIcon} from "lucide-react";
+import { HomeIcon} from "lucide-react";
 import {ThemeToggler} from "@/components/layout/theme-toggler";
 
 const routes = [

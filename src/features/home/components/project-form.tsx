@@ -8,12 +8,10 @@ import {Loader2Icon, SendIcon} from "lucide-react";
 import {toast} from "sonner";
 import {Button} from "@/components/ui/button";
 import {ProjectSchema, ProjectSchemaType} from "@/features/projects/schemas";
-import {useCreateProject} from "@/features/projects/api/use-create-project";
-import {useRouter} from "next/navigation";
+import { useCreateProject} from "@/features/projects/api/use-create-project";
 
 export default function ProjectForm() {
     const {mutate, isPending} = useCreateProject()
-    const router = useRouter();
 
     const form = useForm<ProjectSchemaType>({
         resolver: zodResolver(ProjectSchema),

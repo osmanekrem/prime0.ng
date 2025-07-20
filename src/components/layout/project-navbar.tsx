@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import {useGetProjects} from "@/features/projects/api/use-get-projects";
+import {getProjects} from "@/features/projects/api/use-get-projects";
 import {useSuspenseQuery} from "@tanstack/react-query";
 import Link from "next/link";
 import {
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 
 export default function ProjectNavbar() {
-    const {data} = useSuspenseQuery(useGetProjects);
+    const {data} = useSuspenseQuery(getProjects);
     return (
         <SidebarGroup>
             <SidebarGroupLabel>

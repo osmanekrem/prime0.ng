@@ -1,7 +1,7 @@
 import {queryOptions} from "@tanstack/react-query";
 import {client} from "@/lib/rpc";
 
-export const useGetMessages = (projectId: string) => {
+export const getMessages = (projectId: string) => {
     return queryOptions({
         queryKey: ["messages", projectId],
         queryFn: async () => {

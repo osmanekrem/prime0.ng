@@ -5,7 +5,7 @@ import {
     SidebarGroup, SidebarGroupContent, SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem, SidebarMenuSub,
-    SidebarProvider, SidebarRail
+    SidebarProvider
 } from "@/components/ui/sidebar";
 import {ChevronRightIcon, FileIcon, FolderIcon} from "lucide-react";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";

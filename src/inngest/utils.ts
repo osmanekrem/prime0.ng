@@ -1,7 +1,5 @@
 import {Sandbox} from "@e2b/code-interpreter";
-import {AgentResult, TextMessage} from "@inngest/agent-kit";
-import {db} from "@/db/drizzle";
-import {messages} from "@/db/schema";
+import {AgentResult, Message, TextMessage} from "@inngest/agent-kit";
 
 export async function getSandbox(sandboxId: string) {
     const sandbox = Sandbox.connect(sandboxId);

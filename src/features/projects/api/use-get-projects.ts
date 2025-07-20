@@ -4,7 +4,7 @@ import {client} from "@/lib/rpc";
 
 
 
-export const useGetProjects =  queryOptions({
+export const getProjects =  queryOptions({
         queryKey: ["projects"],
         queryFn: async () => {
             const response = await client.api.projects.$get()

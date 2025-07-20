@@ -7,14 +7,14 @@ import {
 import Logo from "@/components/logo";
 import UserButton from "@/features/auth/components/user-button";
 import Navbar from "@/components/layout/navbar";
-import {useGetProjects} from "@/features/projects/api/use-get-projects";
+import { getProjects} from "@/features/projects/api/use-get-projects";
 import ProjectNavbar from "@/components/layout/project-navbar";
 import {getQueryClient} from "@/lib/get-query-client";
 import {Suspense} from "react";
 
 export default function AppSidebar() {
     const queryClient = getQueryClient();
-    void queryClient.prefetchQuery(useGetProjects)
+    void queryClient.prefetchQuery(getProjects)
     return (
         <Sidebar>
             <SidebarHeader>

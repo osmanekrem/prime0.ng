@@ -48,15 +48,13 @@ export const angularAgent = inngest.createFunction(
             name: 'code-agent',
             description: 'An expert coding agent',
             system: PROMPT,
-            defaultState: state,
             model: gemini({
                 model: 'gemini-2.0-flash',
                 defaultParameters: {
                     generationConfig: {
-                        temperature: 0.1
+                        temperature: 0.1,
                     },
                 },
-
             }),
             tools: [
                 createTool({
@@ -164,6 +162,7 @@ export const angularAgent = inngest.createFunction(
             name: "coding-agent-network",
             agents: [codeAgent],
             maxIter: 15,
+            defaultState: state,
             router: async ({network}) => {
                 const summary = network.state.data.summary;
 

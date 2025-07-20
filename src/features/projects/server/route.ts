@@ -7,7 +7,6 @@ import {messages, projects} from "@/db/schema";
 import {inngest} from "@/inngest/client";
 import {eq} from "drizzle-orm";
 import {generateSlug} from "random-word-slugs";
-import {project} from "gcp-metadata";
 
 const app = new Hono()
     .post("/", sessionMiddleware, zValidator("json", ProjectSchema), async (c) => {
@@ -29,7 +28,7 @@ const app = new Hono()
             }, 500);
         }
 
-        const newMessage = await db.insert(messages).values({
+        await db.insert(messages).values({
             content: validatedData.value,
             messageRole: "USER",
             messageType: "RESULT",
@@ -62,7 +61,6 @@ const app = new Hono()
     })
     .get("/:projectId", sessionMiddleware, async (c) => {
         const {projectId} = c.req.param();
-        const user = c.get("user");
 
         const project = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1);
 
