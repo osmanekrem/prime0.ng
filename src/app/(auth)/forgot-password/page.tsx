@@ -1,5 +1,5 @@
 import {Metadata} from "next";
-import ForgotPasswordForm from "@/features/views/forgot-password-form";
+import ForgotPasswordForm from "@/features/auth/views/forgot-password-form";
 
 export const metadata: Metadata = {
     title: 'Şifremi Unuttum'

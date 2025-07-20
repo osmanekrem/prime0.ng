@@ -10,15 +10,8 @@ export default function AppLayout({
     return (
         <SidebarProvider>
             <Sidebar/>
-            <main className=" h-full w-full">
-                <header className="w-full">
-                    <div className="flex items-center justify-between h-16 px-4">
-                        <SidebarTrigger />
-                    </div>
-                </header>
-                <div className="py-8 px-6 flex h-full flex-col mx-auto max-w-screen-2xl">
+            <main className="flex flex-col h-screen flex-1 min-w-0" >
                 {children}
-                </div>
             </main>
         </SidebarProvider>
     );

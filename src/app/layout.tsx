@@ -6,6 +6,7 @@ import {auth} from "@/auth";
 import {QueryProvider} from "@/components/query-provider";
 import {Toaster} from "@/components/ui/sonner";
 import React from "react";
+import {ThemeProvider} from "@/components/layout/theme-provider";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -34,12 +35,19 @@ export default async function RootLayout({
     return (
         <SessionProvider session={session}>
             <QueryProvider>
-                <html lang="en">
+                <html lang="en" suppressHydrationWarning>
                 <body
-                    className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                    className={`${geistSans.variable} ${geistMono.variable} antialiased w-screen`}
+                >
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
                 >
                 {children}
                 <Toaster/>
+                </ThemeProvider>
                 </body>
                 </html>
 

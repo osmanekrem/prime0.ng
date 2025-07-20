@@ -15,9 +15,7 @@ export const useLogin = () => {
     },
     onSuccess: () => {
       router.refresh();
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-      queryClient.invalidateQueries({ queryKey: ["teamMembers"] });
     },
     onError: (error) => {
       console.log(error);

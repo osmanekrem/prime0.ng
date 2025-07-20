@@ -1,4 +1,4 @@
-import NewPasswordForm from "@/features/views/new-password-form";
+import NewPasswordForm from "@/features/auth/views/new-password-form";
 
 export default function NewPasswordPage() {
     return <NewPasswordForm />

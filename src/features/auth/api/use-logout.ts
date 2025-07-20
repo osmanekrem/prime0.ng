@@ -13,9 +13,7 @@ export const useLogout = () => {
         },
         onSuccess: () => {
             router.refresh()
-            queryClient.invalidateQueries({queryKey: ['teams']});
             queryClient.invalidateQueries({queryKey: ['currentUser']});
-            queryClient.invalidateQueries({queryKey: ['teamMembers']})
         },
         onError: (error) => {
             toast.error(`Çıkış yapılırken bir hata oluştu: ${error.message}`);

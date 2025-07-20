@@ -1,4 +1,4 @@
-import LoginForm from "@/features/views/login-form";
+import LoginForm from "@/features/auth/views/login-form";
 
 export const metadata = {
     title: "Giriş Yap",
