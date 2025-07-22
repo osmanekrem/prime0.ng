@@ -24,7 +24,7 @@ export default function ProjectView({
         <div className="h-full">
             <ResizablePanelGroup direction="horizontal" className="h-full">
                 <ResizablePanel defaultSize={35} minSize={20} className="flex flex-col min-h-0">
-                    <Suspense fallback={null}>
+                    <Suspense fallback={"loading header..."}>
                         <ProjectHeader projectId={projectId}/>
                     </Suspense>
                     <Suspense fallback={"loading messages..."}>

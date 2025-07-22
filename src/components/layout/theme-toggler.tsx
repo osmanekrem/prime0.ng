@@ -13,8 +13,19 @@ import {
 import {SidebarMenuButton} from "@/components/ui/sidebar";
 
 export function ThemeToggler() {
+    const [mounted, setMounted] = React.useState(false)
     const { setTheme, theme } = useTheme()
 
+    React.useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    if (!mounted) {
+        return <SidebarMenuButton size="default" className="px-3 py-2">
+            <Sun className="w-4 h-4" />
+            <span>Theme</span>
+        </SidebarMenuButton>
+    }
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

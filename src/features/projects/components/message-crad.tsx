@@ -1,9 +1,12 @@
+"use client";
+
 import {Fragment} from "@/db/schema";
 import {Card} from "@/components/ui/card";
 import {cn} from "@/lib/utils";
 import {format} from "date-fns";
 import Logo from "@/components/logo";
 import {CodeIcon} from "lucide-react";
+import {useEffect, useState} from "react";
 
 type Props = {
     content: string;
@@ -23,6 +26,14 @@ export default function MessageCrad({
     isActiveFragment = false,
     onFragmentClick = () => {},
                                     }: Props) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const formattedDate = mounted ? format(new Date(createdAt), "HH:mm 'on' dd/MM/yyyy") : "";
+
     if(messageRole === "USER") {
         return (
             <div className="flex pl-8 justify-end">
@@ -43,7 +54,7 @@ export default function MessageCrad({
                         <Logo size={24} />
                     </div>
                         <span >Taskmaster</span>
-                    <div className="text-sm text-muted-foreground">{format(createdAt,"HH:mm 'on' dd/mm/YYY")}</div>
+                    <div className="text-sm text-muted-foreground">{formattedDate}</div>
                     </div>
                     <div className={"pl-10"}>
                         <p>{content}</p>
