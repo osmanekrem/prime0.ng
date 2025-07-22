@@ -10,34 +10,34 @@ import {eq} from "drizzle-orm";
 import {Metadata} from "next";
 import {notFound} from "next/navigation";
 
-export const revalidate = 60;
-
-export const dynamicParams = true;
-
-export async function generateMetadata({params}: {
-    params: Promise<{
-        projectId: string;
-    }>
-}): Promise<Metadata> {
-    const {projectId} = await params;
-    const data = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1)
-
-    if(!data || data.length === 0) {
-        return notFound();
-    }
-
-    return {
-        title: data[0]?.name || "Proje",
-        description: `Proje sayfası: ${data[0]?.name || "Proje"}`
-    };
-}
-
-    export async function generateStaticParams() {
-        const data = await db.select().from(projects)
-        return data.map((project) => ({
-            id: project.id,
-        }))
-    }
+// export const revalidate = 60;
+//
+// export const dynamicParams = true;
+//
+// export async function generateMetadata({params}: {
+//     params: Promise<{
+//         projectId: string;
+//     }>
+// }): Promise<Metadata> {
+//     const {projectId} = await params;
+//     const data = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1)
+//
+//     if(!data || data.length === 0) {
+//         return notFound();
+//     }
+//
+//     return {
+//         title: data[0]?.name || "Proje",
+//         description: `Proje sayfası: ${data[0]?.name || "Proje"}`
+//     };
+// }
+//
+//     export async function generateStaticParams() {
+//         const data = await db.select().from(projects)
+//         return data.map((project) => ({
+//             id: project.id,
+//         }))
+//     }
 
 type Props = {
     params: Promise<{
