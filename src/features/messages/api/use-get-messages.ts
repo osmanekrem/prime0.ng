@@ -16,7 +16,6 @@ export const getMessages = (projectId: string) => {
             return result.data || []
         },
         enabled: !!projectId,
-        refetchInterval: 5000,
     })
 
 

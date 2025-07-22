@@ -93,7 +93,7 @@ const Tree = ({
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                    <SidebarMenuSub className="mr-0">
+                    <SidebarMenuSub className="mr-0 pr-1">
                         {items.map((subItem, index) => (
                             <Tree
                                 key={`${path}-${index}`}

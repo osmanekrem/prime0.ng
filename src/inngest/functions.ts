@@ -1,4 +1,4 @@
-import {inngest} from "@/inngest/client";
+import {inngest, projectChannel} from "@/inngest/client";
 import {createAgent, createNetwork, createState, createTool, gemini, Message, Tool} from "@inngest/agent-kit";
 import {Sandbox} from "@e2b/code-interpreter";
 import {getResponseFromOutput, getSandbox, getTitleFromOutput, lastAssistantMessage} from "@/inngest/utils";
@@ -6,7 +6,7 @@ import {z} from "zod";
 import {FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT} from "@/inngest/prompts";
 import {db} from "@/db/drizzle";
 import {fragments, messages} from "@/db/schema";
-import {asc, eq} from "drizzle-orm";
+import {asc, desc, eq} from "drizzle-orm";
 
 interface AgentState {
     summary: string;
@@ -14,15 +14,22 @@ interface AgentState {
 }
 
 export const angularAgent = inngest.createFunction(
-    {id: "angular-agent", name: "Amgular Agent"},
+    {id: "angular-agent", name: "Angular Agent"},
     {event: "angular-agent/run"},
-    async ({event, step}) => {
+    async ({event, step, publish,  }) => {
+        await publish(projectChannel(event.data.projectId).status({status: "running", message: "Angular agent is running"}))
         const sandboxId = await step.run("Get sandbox id", async () => {
+            await publish(projectChannel(event.data.projectId).status({status: "running", message: "Creating sandbox"}))
             const sandbox = await Sandbox.create("prime0-ng-test")
             return sandbox.sandboxId
         })
+        if (!sandboxId) {
+            await publish(projectChannel(event.data.projectId).status({status: "error", message: "Sandbox creation failed"}))
+            throw new Error("Sandbox creation failed");
+        }
 
         const previousMessages = await step.run("get-previous-messages", async () => {
+            await publish(projectChannel(event.data.projectId).status({status: "running", message: "Fetching previous messages"}))
             const formattedMessages: Message[] = [];
 
             const messagesData = await db.select().from(messages).where(eq(messages.projectId, event.data.projectId)).orderBy(asc(messages.createdAt));
@@ -42,7 +49,7 @@ export const angularAgent = inngest.createFunction(
             summary: "",
             files: {}
         },
-            { messages: previousMessages})
+            { messages: previousMessages })
 
         const codeAgent = createAgent<AgentState>({
             name: 'code-agent',
@@ -79,6 +86,7 @@ export const angularAgent = inngest.createFunction(
                                 })
                                 return res.stdout
                             } catch (error) {
+                                await publish(projectChannel(event.data.projectId).status({status: "error", message: `Error running command: ${command}`}))
                                 console.error(`Error running command: ${command}\n Stdout: ${buffers.stdout}\nStderr: ${buffers.stderr}`);
                                 return `Error running command: ${command}\n Stdout: ${buffers.stdout}\nStderr: ${buffers.stderr}`;
                             }
@@ -107,6 +115,7 @@ export const angularAgent = inngest.createFunction(
                                 }
                                 return updatedFiles;
                             } catch (error) {
+                                await publish(projectChannel(event.data.projectId).status({status: "error", message: `Error creating or updating files: ${error}`}))
                                 console.error("Error creating or updating files:", error);
                                 return "Error creating or updating files: " + error
                             }
@@ -136,6 +145,7 @@ export const angularAgent = inngest.createFunction(
                                 }
                                 return JSON.stringify(contents);
                             } catch (error) {
+                                await publish(projectChannel(event.data.projectId).status({status: "error", message: `Error reading files: ${error}`}))
                                 console.error("Error reading files:", error);
                                 return "Error reading files: " + error;
                             }
@@ -173,6 +183,7 @@ export const angularAgent = inngest.createFunction(
                 return codeAgent
             }
         })
+        await publish(projectChannel(event.data.projectId).status({status: "running", message: "code-agent-running"}))
         const result = await network.run(event.data.value, {state})
 
         const fragmentTitleGenerator = createAgent({
@@ -180,7 +191,7 @@ export const angularAgent = inngest.createFunction(
             description: 'Generates a title for the code fragment',
             system: FRAGMENT_TITLE_PROMPT,
             model: gemini({
-                model: 'gemini-2.0-flash',
+                model: 'gemini-2.0-flash-lite',
             })
         })
         const responseGenerator = createAgent({
@@ -188,10 +199,11 @@ export const angularAgent = inngest.createFunction(
             description: 'Generates a response for the user',
             system: RESPONSE_PROMPT,
             model: gemini({
-                model: 'gemini-2.0-flash',
+                model: 'gemini-2.0-flash-lite',
             })
         })
 
+        await publish(projectChannel(event.data.projectId).status({status: "running", message: "Generating final response"}))
         const {output: fragmentTitleOutput} = await fragmentTitleGenerator.run(result.state.data.summary)
         const {output: response} = await responseGenerator.run(result.state.data.summary)
 
@@ -200,14 +212,16 @@ export const angularAgent = inngest.createFunction(
         const isError = !result.state.data.summary || Object.keys(result.state.data.files || {}).length === 0
 
         const sandboxUrl = await step.run("Get sandbox url", async () => {
+            await publish(projectChannel(event.data.projectId).status({status: "running", message: "Fetching sandbox URL"}))
             const sandbox = await getSandbox(sandboxId)
             const host = sandbox.getHost(4200)
             return `https://${host}`
         })
 
         await step.run("save-result", async () => {
+            await publish(projectChannel(event.data.projectId).status({status: "running", message: "Saving result"}))
             if (isError) {
-                console.error("Error in agent run:", result.state.data.summary);
+                await publish(projectChannel(event.data.projectId).status({status: "error", message: "An error occurred while processing the request"}))
                 return db.insert(messages).values({
                     projectId: event.data.projectId,
                     content: "Bir şeylerler ters gitti. Lütfen daha sonra tekrar deneyin.",
@@ -221,14 +235,17 @@ export const angularAgent = inngest.createFunction(
                 messageRole: "ASSISTANT",
                 messageType: "RESULT"
             }).returning()
-            return await db.insert(fragments).values({
+            const data = await db.insert(fragments).values({
                 messageId: message[0].id,
                 sandboxUrl: sandboxUrl,
                 title: getTitleFromOutput(fragmentTitleOutput),
                 files: JSON.stringify(result.state.data.files)
-            })
+            }).returning()
+
+            return data
         })
 
+        await publish(projectChannel(event.data.projectId).status({status: "completed", message: "Angular agent completed successfully"}))
         return {url: sandboxUrl, title: getTitleFromOutput(fragmentTitleOutput), files: result.state.data.files, summary: getResponseFromOutput(response)}
     }
 )

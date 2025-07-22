@@ -11,11 +11,19 @@ export const useCreateMessage = () => {
     const queryClient = useQueryClient();
     return useMutation<ResponseType, Error, RequestType>({
         mutationFn: async ({json}) => {
-            const response =  await client.api.messages.$post({json});
+            const response = await client.api.messages.$post({json});
             return await response.json();
         },
         onSuccess: (res) => {
-            queryClient.invalidateQueries({queryKey: ['messages', res.data.projectId]});
+            queryClient.setQueryData(
+                ['messages', res.data.message.projectId],
+                (oldData: any) => {
+                    console.log(oldData, res.data)
+                    if (!oldData) return [res.data];
+                    return [...oldData, res.data];
+                },
+
+            );
         },
         onError: (error) => {
             console.log(error);

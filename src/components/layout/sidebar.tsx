@@ -19,8 +19,9 @@ export default function AppSidebar() {
         <Sidebar>
             <SidebarHeader>
                 <div className="flex items-center justify-start flex-wrap px-2">
-                    <Logo size={48}/>
-                    <span className="text-2xl font-bold">TaskMaster</span>
+                    <Logo size={32}/>
+                    <span className="text-xl font-bold">Taskmaster</span>
+                    <span className="text-sm ml-2">Beta</span>
 
                 </div>
             </SidebarHeader>

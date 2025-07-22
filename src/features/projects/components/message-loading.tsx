@@ -32,7 +32,7 @@ export function ShimmerMessages() {
 }
 
 
-export default function MessageLoading() {
+export default function MessageLoading({message}: { message?: string }) {
     return (
         <div className="flex justify-start">
             <Card
@@ -45,7 +45,11 @@ export default function MessageLoading() {
                     <span >Taskmaster</span>
                 </div>
                 <div className={"pl-10"}>
-                    <ShimmerMessages />
+                    {!message || message === "code-agent-running" ? (
+                        <ShimmerMessages />
+                    ) : (
+                        <p className="text-muted-foreground animate-pulse">{message}</p>
+                    )}
                 </div>
             </Card>
         </div>

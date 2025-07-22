@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Logo from "@/components/logo";
 import ProjectForm from "@/features/home/components/project-form";

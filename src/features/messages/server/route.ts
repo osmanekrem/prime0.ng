@@ -28,7 +28,7 @@ const app = new Hono()
 
         return c.json({
             success: true,
-            data: newMessage[0],
+            data: {message: newMessage[0], fragment: null},
         });
     })
     .get("/", sessionMiddleware, zValidator("query", GetMessagesSchema), async (c) => {

@@ -19,7 +19,10 @@ export const useCreateProject = () => {
         onSuccess: (
             res
         ) => {
-            queryClient.invalidateQueries({queryKey: ['projects']});
+            queryClient.setQueryData(['projects'], (oldData: any) => {
+                if (!oldData) return [res.data];
+                return [...oldData, res.data];
+            });
             router.push(`/projects/${res.data?.id}`);
         },
         onError: (error) => {
