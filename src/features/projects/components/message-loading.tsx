@@ -38,7 +38,7 @@ export default function MessageLoading({message}: { message?: string }) {
             <Card
                 className={cn("rounded-lg p-3 shadow-none border-none break-words")}
             >
-                <div className="flex items-center gap-2 text-black">
+                <div className="flex items-center gap-2 text-foreground">
                     <div className="size-8 rounded-full bg-primary-foreground ring ring-primary flex items-center justify-center">
                         <Logo size={24} />
                     </div>

@@ -32,7 +32,7 @@ export default function MessagesContainer({
     });
 
     useEffect(() => {
-        if (liveResponse) {
+        if (liveResponse?.data && liveResponse.data.status === "completed") {
             console.log("Live response received:", liveResponse);
             refetch()
         }
