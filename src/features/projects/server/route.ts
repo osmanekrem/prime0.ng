@@ -4,7 +4,7 @@ import {ProjectSchema} from "@/features/projects/schemas";
 import {zValidator} from "@hono/zod-validator";
 import {db} from "@/db/drizzle";
 import {messages, projects} from "@/db/schema";
-import {inngest} from "@/inngest/client";
+import {inngest} from "@/inngest/angular-agent/client";
 import {eq} from "drizzle-orm";
 import {generateSlug} from "random-word-slugs";
 
@@ -12,7 +12,6 @@ const app = new Hono()
     .post("/", sessionMiddleware, zValidator("json", ProjectSchema), async (c) => {
         const validatedData = c.req.valid("json");
         const user = c.get("user");
-
 
 
         const newProject = await db.insert(projects).values({
@@ -36,7 +35,7 @@ const app = new Hono()
         })
 
         await inngest.send({
-            name: "angular-agent/run",
+            name: "optimizer-agent/run",
             data: {
                 value: validatedData.value,
                 projectId: newProject[0].id!,

@@ -8,6 +8,7 @@ import FragmentWeb from "@/features/projects/components/fragment-web";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Code2Icon, EyeIcon} from "lucide-react";
 import FileExplorer from "@/components/file-explorer";
+import BenchmarkResult from "@/features/projects/components/benchmark-result";
 
 
 type Props = {
@@ -54,7 +55,8 @@ export default function ProjectView({
                         <TabsContent value="preview">
 
                             {
-                                !!activeFragment && (<FragmentWeb data={activeFragment}/>)
+                                !!activeFragment && (activeFragment.sandboxUrl ? <FragmentWeb data={activeFragment}/> :
+                                    <BenchmarkResult fragment={activeFragment}/>)
                             }
                         </TabsContent>
                         <TabsContent value="code" className="min-h-0">

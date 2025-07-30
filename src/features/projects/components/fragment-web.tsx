@@ -18,7 +18,7 @@ export default function FragmentWeb({
     }
 
     const onCopy = () => {
-        navigator.clipboard.writeText(data.sandboxUrl).then(() => {
+        navigator.clipboard.writeText(data.sandboxUrl!).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         }).catch(() => {
@@ -44,7 +44,7 @@ export default function FragmentWeb({
                 </Hint>
                 <Hint text="Open in a new tab">
                     <Button size="icon" variant="outline" className="size-8" onClick={() => {
-                        window.open(data.sandboxUrl, "_blank", "noopener,noreferrer");
+                        window.open(data.sandboxUrl!, "_blank", "noopener,noreferrer");
                     }} disabled={!data.sandboxUrl}>
                         <span className="sr-only">Open in new tab</span>
                         <ExternalLinkIcon className="size-4"/>
@@ -53,7 +53,7 @@ export default function FragmentWeb({
             </div>
             <iframe className={"h-full w-full"}
                     key={fragmentKey}
-                    src={data.sandboxUrl}
+                    src={data.sandboxUrl!}
                     title={data.title}
                     sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                     loading="lazy"

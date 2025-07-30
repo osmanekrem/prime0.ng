@@ -1,12 +1,4 @@
-import {
-    boolean,
-    timestamp,
-    pgTable,
-    text,
-    primaryKey,
-    integer,
-    pgEnum,
-} from "drizzle-orm/pg-core";
+import {boolean, integer, pgEnum, pgTable, primaryKey, text, timestamp,} from "drizzle-orm/pg-core";
 import type {AdapterAccountType} from "@auth/core/adapters";
 
 export const users = pgTable("user", {
@@ -152,7 +144,8 @@ export const fragments = pgTable("fragment", {
         .notNull()
         .references(() => messages.id, {onDelete: "cascade"}),
 
-    sandboxUrl: text("sandboxUrl").notNull(),
+    sandboxUrl: text("sandboxUrl"),
+    benchmarkData: text("benchmarkData"),
     title: text("title").notNull(),
     // files is json like path to content {[path: string]: string}
     files: text("files").notNull(),

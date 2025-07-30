@@ -1,12 +1,12 @@
-import {inngest, projectChannel} from "@/inngest/client";
+import {inngest, projectChannel} from "@/inngest/angular-agent/client";
 import {createAgent, createNetwork, createState, createTool, gemini, Message, Tool} from "@inngest/agent-kit";
 import {Sandbox} from "@e2b/code-interpreter";
 import {getResponseFromOutput, getSandbox, getTitleFromOutput, lastAssistantMessage} from "@/inngest/utils";
 import {z} from "zod";
-import {FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT} from "@/inngest/prompts";
+import {FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT} from "@/inngest/angular-agent/prompts";
 import {db} from "@/db/drizzle";
 import {fragments, messages} from "@/db/schema";
-import {asc, desc, eq} from "drizzle-orm";
+import {asc, eq} from "drizzle-orm";
 
 interface AgentState {
     summary: string;
@@ -16,20 +16,29 @@ interface AgentState {
 export const angularAgent = inngest.createFunction(
     {id: "angular-agent", name: "Angular Agent"},
     {event: "angular-agent/run"},
-    async ({event, step, publish,  }) => {
-        await publish(projectChannel(event.data.projectId).status({status: "running", message: "Angular agent is running"}))
+    async ({event, step, publish,}) => {
+        await publish(projectChannel(event.data.projectId).status({
+            status: "running",
+            message: "Angular agent is running"
+        }))
         const sandboxId = await step.run("Get sandbox id", async () => {
             await publish(projectChannel(event.data.projectId).status({status: "running", message: "Creating sandbox"}))
             const sandbox = await Sandbox.create("prime0-ng-test")
             return sandbox.sandboxId
         })
         if (!sandboxId) {
-            await publish(projectChannel(event.data.projectId).status({status: "error", message: "Sandbox creation failed"}))
+            await publish(projectChannel(event.data.projectId).status({
+                status: "error",
+                message: "Sandbox creation failed"
+            }))
             throw new Error("Sandbox creation failed");
         }
 
         const previousMessages = await step.run("get-previous-messages", async () => {
-            await publish(projectChannel(event.data.projectId).status({status: "running", message: "Fetching previous messages"}))
+            await publish(projectChannel(event.data.projectId).status({
+                status: "running",
+                message: "Fetching previous messages"
+            }))
             const formattedMessages: Message[] = [];
 
             const messagesData = await db.select().from(messages).where(eq(messages.projectId, event.data.projectId)).orderBy(asc(messages.createdAt));
@@ -46,10 +55,10 @@ export const angularAgent = inngest.createFunction(
         })
 
         const state = createState<AgentState>({
-            summary: "",
-            files: {}
-        },
-            { messages: previousMessages })
+                summary: "",
+                files: {}
+            },
+            {messages: previousMessages})
 
         const codeAgent = createAgent<AgentState>({
             name: 'code-agent',
@@ -86,7 +95,10 @@ export const angularAgent = inngest.createFunction(
                                 })
                                 return res.stdout
                             } catch (error) {
-                                await publish(projectChannel(event.data.projectId).status({status: "error", message: `Error running command: ${command}`}))
+                                await publish(projectChannel(event.data.projectId).status({
+                                    status: "error",
+                                    message: `Error running command: ${command}`
+                                }))
                                 console.error(`Error running command: ${command}\n Stdout: ${buffers.stdout}\nStderr: ${buffers.stderr}`);
                                 return `Error running command: ${command}\n Stdout: ${buffers.stdout}\nStderr: ${buffers.stderr}`;
                             }
@@ -115,7 +127,10 @@ export const angularAgent = inngest.createFunction(
                                 }
                                 return updatedFiles;
                             } catch (error) {
-                                await publish(projectChannel(event.data.projectId).status({status: "error", message: `Error creating or updating files: ${error}`}))
+                                await publish(projectChannel(event.data.projectId).status({
+                                    status: "error",
+                                    message: `Error creating or updating files: ${error}`
+                                }))
                                 console.error("Error creating or updating files:", error);
                                 return "Error creating or updating files: " + error
                             }
@@ -145,7 +160,10 @@ export const angularAgent = inngest.createFunction(
                                 }
                                 return JSON.stringify(contents);
                             } catch (error) {
-                                await publish(projectChannel(event.data.projectId).status({status: "error", message: `Error reading files: ${error}`}))
+                                await publish(projectChannel(event.data.projectId).status({
+                                    status: "error",
+                                    message: `Error reading files: ${error}`
+                                }))
                                 console.error("Error reading files:", error);
                                 return "Error reading files: " + error;
                             }
@@ -203,16 +221,21 @@ export const angularAgent = inngest.createFunction(
             })
         })
 
-        await publish(projectChannel(event.data.projectId).status({status: "running", message: "Generating final response"}))
+        await publish(projectChannel(event.data.projectId).status({
+            status: "running",
+            message: "Generating final response"
+        }))
         const {output: fragmentTitleOutput} = await fragmentTitleGenerator.run(result.state.data.summary)
         const {output: response} = await responseGenerator.run(result.state.data.summary)
-
 
 
         const isError = !result.state.data.summary || Object.keys(result.state.data.files || {}).length === 0
 
         const sandboxUrl = await step.run("Get sandbox url", async () => {
-            await publish(projectChannel(event.data.projectId).status({status: "running", message: "Fetching sandbox URL"}))
+            await publish(projectChannel(event.data.projectId).status({
+                status: "running",
+                message: "Fetching sandbox URL"
+            }))
             const sandbox = await getSandbox(sandboxId)
             const host = sandbox.getHost(4200)
             return `https://${host}`
@@ -221,7 +244,10 @@ export const angularAgent = inngest.createFunction(
         await step.run("save-result", async () => {
             await publish(projectChannel(event.data.projectId).status({status: "running", message: "Saving result"}))
             if (isError) {
-                await publish(projectChannel(event.data.projectId).status({status: "error", message: "An error occurred while processing the request"}))
+                await publish(projectChannel(event.data.projectId).status({
+                    status: "error",
+                    message: "An error occurred while processing the request"
+                }))
                 return db.insert(messages).values({
                     projectId: event.data.projectId,
                     content: "Bir şeylerler ters gitti. Lütfen daha sonra tekrar deneyin.",
@@ -245,7 +271,15 @@ export const angularAgent = inngest.createFunction(
             return data
         })
 
-        await publish(projectChannel(event.data.projectId).status({status: "completed", message: "Angular agent completed successfully"}))
-        return {url: sandboxUrl, title: getTitleFromOutput(fragmentTitleOutput), files: result.state.data.files, summary: getResponseFromOutput(response)}
+        await publish(projectChannel(event.data.projectId).status({
+            status: "completed",
+            message: "Angular agent completed successfully"
+        }))
+        return {
+            url: sandboxUrl,
+            title: getTitleFromOutput(fragmentTitleOutput),
+            files: result.state.data.files,
+            summary: getResponseFromOutput(response)
+        }
     }
 )

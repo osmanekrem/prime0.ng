@@ -12,7 +12,6 @@
     "db:studio": "npx drizzle-kit studio"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^1.10.0",
     "@e2b/code-interpreter": "^1.5.1",
     "@hono/zod-validator": "^0.7.0",
     "@hookform/resolvers": "^5.1.1",

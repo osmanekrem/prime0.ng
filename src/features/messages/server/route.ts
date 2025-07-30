@@ -4,7 +4,7 @@ import {GetMessagesSchema, MessageSchema} from "@/features/messages/schemas";
 import {zValidator} from "@hono/zod-validator";
 import {db} from "@/db/drizzle";
 import {fragments, messages} from "@/db/schema";
-import {inngest} from "@/inngest/client";
+import {inngest} from "@/inngest/angular-agent/client";
 import {asc, eq} from "drizzle-orm";
 
 const app = new Hono()

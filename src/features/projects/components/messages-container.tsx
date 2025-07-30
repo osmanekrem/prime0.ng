@@ -8,7 +8,7 @@ import React, {useEffect, useRef} from "react";
 import {Fragment} from "@/db/schema";
 import MessageLoading from "@/features/projects/components/message-loading";
 import {useInngestSubscription} from "@inngest/realtime/hooks";
-import {fetchRealtimeSubscriptionToken} from "@/inngest/actions";
+import {fetchRealtimeSubscriptionToken} from "@/inngest/angular-agent/actions";
 
 type Props = {
     projectId: string;
@@ -76,18 +76,18 @@ export default function MessagesContainer({
                     />
                 ))}
                 {liveResponse?.data.status === "running" && (
-                    <MessageLoading message={liveResponse?.data.message} />
+                    <MessageLoading message={liveResponse?.data.message}/>
                 )}
                 {(error || liveResponse?.data.status === "error") && (
-                        <div className="text-gray-500 text-center">
-                            {liveResponse?.data.status === "error" ? (
+                    <div className="text-gray-500 text-center">
+                        {liveResponse?.data.status === "error" ? (
                             liveResponse?.data.message || "An error occurred while processing the request."
 
-                    ) : error ? (
-                        error?.message || "An error occurred while fetching messages."
-                    ): "An error occurred while processing the request."
-                    }
-                        </div>
+                        ) : error ? (
+                            error?.message || "An error occurred while fetching messages."
+                        ) : "An error occurred while processing the request."
+                        }
+                    </div>
 
                 )}
 

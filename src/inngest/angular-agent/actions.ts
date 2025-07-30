@@ -1,7 +1,7 @@
 "use server";
 
-import { getSubscriptionToken, Realtime } from "@inngest/realtime";
-import {inngest, projectChannel} from "@/inngest/client";
+import {getSubscriptionToken, Realtime} from "@inngest/realtime";
+import {inngest, projectChannel} from "@/inngest/angular-agent/client";
 
 export type ProjectToken = Realtime.Token<typeof projectChannel, ["status"]>;
 
