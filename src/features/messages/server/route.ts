@@ -40,7 +40,7 @@ const app = new Hono()
             success: true,
             data: projectMessages,
         });
-    });
+    })
 
 
 export default app
